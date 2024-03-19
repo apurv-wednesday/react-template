@@ -80,7 +80,6 @@ export function Itunes({
   };
 
   const handleOnChange = (sName) => {
-    console.log(sName); // eslint-disable-line no-console
     if (!isEmpty(sName)) {
       searchSongs(sName);
     } else {
@@ -218,6 +217,6 @@ function mapDispatchToProps(dispatch) {
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 
-export default compose(withConnect, memo, injectSaga({ key: 'itunes', iTunesSaga }))(Itunes);
+export default compose(withConnect, memo, injectSaga({ key: 'itunes', saga: iTunesSaga }))(Itunes);
 
 export const ItunesTest = compose()(Itunes);

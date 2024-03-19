@@ -8,9 +8,10 @@
 import React from 'react';
 // import { fireEvent } from '@testing-library/dom';
 import { timeout, renderProvider } from '@utils/testUtils';
-import { ItunesTest as Itunes } from '../index';
+import { ItunesTest as Itunes, mapDispatchToProps } from '../index';
 import { fireEvent } from '@testing-library/dom';
 import { translate } from '@app/utils';
+import { itunesTypes } from '../reducer';
 
 describe('<Itunes /> container tests', () => {
   let submitSpy;
@@ -74,21 +75,21 @@ describe('<Itunes /> container tests', () => {
     expect(submitSpy).toBeCalledWith(songName);
   });
 
-  // it('should validate mapDispatchToProps actions', async () => {
-  //   const dispatchReposSearchSpy = jest.fn();
-  //   const songName = 'coldplay';
-  //   const actions = {
-  //     dispatchGithubRepos: { songName, type: homeContainerTypes.REQUEST_GET_GITHUB_REPOS },
-  //     dispatchClearGithubRepos: { type: homeContainerTypes.CLEAR_GITHUB_REPOS }
-  //   };
-  //   const props = mapDispatchToProps(dispatchReposSearchSpy);
-  //   props.dispatchGithubRepos(songName);
-  //   expect(dispatchReposSearchSpy).toHaveBeenCalledWith(actions.dispatchGithubRepos);
+  it('should validate mapDispatchToProps actions', async () => {
+    const dispatchSongsSearchSpy = jest.fn();
+    const songName = 'coldplay';
+    const actions = {
+      dispatchSongsApi: { songName, type: itunesTypes.REQUEST_GETI_TUNES_SONGS },
+      dispatchClearSongsData: { type: itunesTypes.CLEARI_TUNES_SONGS }
+    };
+    const props = mapDispatchToProps(dispatchSongsSearchSpy);
+    props.dispatchSongsApi(songName);
+    expect(dispatchSongsSearchSpy).toHaveBeenCalledWith(actions.requestGetiTunesSongs);
 
-  //   await timeout(500);
-  //   props.dispatchClearGithubRepos();
-  //   expect(dispatchReposSearchSpy).toHaveBeenCalledWith(actions.dispatchClearGithubRepos);
-  // });
+    await timeout(500);
+    props.dispatchClearSongsData();
+    expect(dispatchSongsSearchSpy).toHaveBeenCalledWith(actions.cleariTunesSongs);
+  });
   it('should render default error message when search goes wrong', () => {
     const defaultError = translate('something_went_wrong');
     const { getByTestId } = renderProvider(<Itunes songsError={defaultError} />);
