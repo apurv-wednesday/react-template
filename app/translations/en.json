@@ -1,11 +1,13 @@
 {
   "get_repo_details": "Get details of repositories",
+  "search_itunes_songs": "Search iTunes songs",
   "matching_repos": "Total number of matching repos: {totalCount}",
   "not_found_page_container": "This is the NotFoundPage container!",
   "repo_full_name_unavailable": "Repository full name unavaiable",
   "repo_list": "Repository List",
   "repo_name_unavailable": "Repository name is unavailable",
   "repo_search": "Repository Search",
+  "itunes_search": "Search Songs",
   "repo_search_default": "Search for a repository by entering it's name in the search box",
   "repo_stars_unavailable": "Repository stars are unavaiable",
   "repository_full_name": "Repository full name: {fullName}",
