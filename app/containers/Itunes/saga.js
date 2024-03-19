@@ -1,13 +1,27 @@
-import { takeLatest } from 'redux-saga/effects';
-import { itunesTypes } from './reducer';
+import { put, call, takeLatest } from 'redux-saga/effects';
+import { getSongs } from '@services/itunesApi';
+import { itunesTypes, itunesCreators } from './reducer';
 
-// Individual exports for testing
-const { DEFAULT_ACTION } = itunesTypes;
+const { REQUEST_GETI_TUNES_SONGS } = itunesTypes;
+const { successGetiTunesSongs, failureGetiTunesSongs } = itunesCreators;
 
-export function* defaultFunction(/* action */) {
-  // console.log('Do something here')
+/**
+ *
+ * @param {*} action
+ */
+export function* getiTunesSongs(action) {
+  const response = yield call(getSongs, action.songName);
+  const { data, ok } = response;
+  if (ok) {
+    yield put(successGetiTunesSongs(data));
+  } else {
+    yield put(failureGetiTunesSongs(data));
+  }
 }
 
-export default function* itunesSaga() {
-  yield takeLatest(DEFAULT_ACTION, defaultFunction);
+/**
+ *
+ */
+export default function* iTunesSaga() {
+  yield takeLatest(REQUEST_GETI_TUNES_SONGS, getiTunesSongs);
 }

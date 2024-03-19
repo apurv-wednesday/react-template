@@ -3,24 +3,47 @@
  * Itunes reducer
  *
  */
-import produce from 'immer';
+import { produce } from 'immer';
 import { createActions } from 'reduxsauce';
-
-export const initialState = {
-  somePayLoad: null
-};
+import get from 'lodash/get';
 
 export const { Types: itunesTypes, Creators: itunesCreators } = createActions({
-  defaultAction: ['somePayLoad']
+  requestGetiTunesSongs: ['songName'],
+  successGetiTunesSongs: ['data'],
+  failureGetiTunesSongs: ['error'],
+  cleariTunesSongs: {}
 });
+
+export const initialState = {
+  songName: null,
+  songsData: {},
+  songsError: null,
+  loading: null
+};
 
 export const itunesReducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
-      case itunesTypes.DEFAULT_ACTION:
-        draft.somePayLoad = action.somePayLoad;
-      default:
+      case itunesTypes.REQUEST_GETI_TUNES_SONGS:
+        draft.songName = action.songName;
+        draft.loading = true;
+        break;
+      case itunesTypes.CLEARI_TUNES_SONGS:
+        draft.songName = null;
+        draft.songsError = null;
+        draft.songsData = {};
+        draft.loading = null;
+        break;
+      case itunesTypes.SUCCESS_GETI_TUNES_SONGS:
+        draft.songsData = action.data;
+        draft.songsError = null;
+        draft.loading = false;
+        break;
+      case itunesTypes.FAILURE_GETI_TUNES_SONGS:
+        draft.songsError = get(action.error, 'message', 'something_went_wrong');
+        draft.songsData = null;
+        draft.loading = false;
+        break;
     }
   });
-
 export default itunesReducer;

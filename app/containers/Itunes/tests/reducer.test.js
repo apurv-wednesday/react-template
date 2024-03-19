@@ -1,17 +1,52 @@
 import { itunesReducer, itunesTypes, initialState } from '../reducer';
 
 describe('Itunes reducer tests', () => {
-  it('should return the initial state by default', () => {
-    expect(itunesReducer(undefined, {})).toEqual(initialState);
+  let state;
+  beforeEach(() => {
+    state = initialState;
   });
 
-  it('should return the updated state when an action of type DEFAULT is dispatched', () => {
-    const expectedResult = { ...initialState, somePayLoad: 'Mohammed Ali Chherawalla' };
+  it('should return the initial state by default', () => {
+    expect(itunesReducer(undefined, {})).toEqual(state);
+  });
+
+  it('should return the initial state when an action of type requestGetiTunesSongs is dispatched', () => {
+    const songName = 'coldplay';
+    const expectedResult = { ...state, songName, loading: true };
     expect(
-      itunesReducer(initialState, {
-        type: itunesTypes.DEFAULT_ACTION,
-        somePayLoad: 'Mohammed Ali Chherawalla'
+      itunesReducer(state, {
+        type: itunesTypes.REQUEST_GETI_TUNES_SONGS,
+        songName
       })
     ).toEqual(expectedResult);
+  });
+
+  it('should ensure that the song data is present and loading = false when successGetiTunesSongs is dispatched', () => {
+    const data = { trackName: 'Coldplay' };
+    const expectedResult = { ...state, songsData: data, loading: false };
+    expect(
+      itunesReducer(state, {
+        type: itunesTypes.SUCCESS_GETI_TUNES_SONGS,
+        data
+      })
+    ).toEqual(expectedResult);
+  });
+
+  it('should ensure that the songsError has some data and loading = false when failureGetiTunesSongs is dispatched', () => {
+    const error = 'something_went_wrong';
+    const expectedResult = { ...state, songsError: error, songsData: null, loading: false };
+    expect(
+      itunesReducer(state, {
+        type: itunesTypes.FAILURE_GETI_TUNES_SONGS,
+        error
+      })
+    ).toEqual(expectedResult);
+  });
+  it('should return the initial state when cleariTunesSongs is dispatched', () => {
+    expect(
+      itunesReducer(state, {
+        type: itunesReducer.CLEARI_TUNES_SONGS
+      })
+    ).toEqual(initialState);
   });
 });
