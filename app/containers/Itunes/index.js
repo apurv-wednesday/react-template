@@ -1,4 +1,4 @@
-import React, { useEffect, memo } from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
@@ -14,7 +14,7 @@ import { selectLoading, selectSongName, selectSongsData, selectSongsError } from
 import T from '@components/T';
 import { If } from '@components/If';
 import { For } from '@components/For';
-import { RepoCard } from '@components/RepoCard';
+import { TrackComponent } from '@components/TrackComponent';
 import { itunesCreators } from './reducer';
 import iTunesSaga from './saga';
 import { translate } from '@app/utils';
@@ -70,7 +70,7 @@ export function Itunes({
   loading
 }) {
   useEffect(() => {
-    if (songName && !songsData?.items?.length) {
+    if (songName && !songsData?.results?.length) {
       dispatchSongsApi(songName);
     }
   }, [dispatchSongsApi, dispatchClearSongsData, songName, songsData]);
@@ -130,27 +130,27 @@ const renderSkeleton = () => {
   );
 };
 const renderSongsList = (songsData, loading, songName) => {
-  const items = get(songsData, 'items', []);
-  const totalCount = get(songsData, 'totalCount', 0);
+  const results = get(songsData, 'results', []);
+  const resultCount = get(songsData, 'resultCount', 0);
   return (
-    <If condition={!isEmpty(items) || loading}>
+    <If condition={!isEmpty(results) || loading}>
       <CustomCard>
         <If condition={!loading} otherwise={renderSkeleton()}>
           <>
             <If condition={!isEmpty(songName)}>
               <div>
-                <T id="search_query" values={{ songName }} />
+                <T id="search_query_itunes" values={{ songName }} />
               </div>
             </If>
-            <If condition={totalCount !== 0}>
+            <If condition={resultCount !== 0}>
               <div>
-                <T id="matching_repos" values={{ totalCount }} />
+                <T id="matching_songs" values={{ resultCount }} />
               </div>
             </If>
             <For
-              of={items}
+              of={results}
               ParentComponent={Container}
-              renderItem={(item, index) => <RepoCard key={index} {...item} />}
+              renderItem={(item, index) => <TrackComponent key={index} {...item} />}
             />
           </>
         </If>
@@ -165,7 +165,7 @@ const renderErrorState = (songName, loading, songsError) => {
     repoError = songsError;
     messageId = 'error-message';
   } else if (isEmpty(songName)) {
-    repoError = 'repo_search_default';
+    repoError = 'song_search_default';
     messageId = 'default-message';
   }
   return (
@@ -183,8 +183,8 @@ Itunes.propTypes = {
   dispatchSongsApi: PropTypes.func,
   dispatchClearSongsData: PropTypes.func,
   songsData: PropTypes.shape({
-    items: PropTypes.array,
-    totalCount: PropTypes.number
+    results: PropTypes.array,
+    resultCount: PropTypes.number
   }),
   songsError: PropTypes.string,
   songName: PropTypes.string,
@@ -207,7 +207,7 @@ const mapStateToProps = createStructuredSelector({
 });
 
 // eslint-disable-next-line require-jsdoc
-function mapDispatchToProps(dispatch) {
+export function mapDispatchToProps(dispatch) {
   const { requestGetiTunesSongs, cleariTunesSongs } = itunesCreators;
   return {
     dispatchSongsApi: (songName) => dispatch(requestGetiTunesSongs(songName)),
@@ -217,6 +217,6 @@ function mapDispatchToProps(dispatch) {
 
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 
-export default compose(withConnect, memo, injectSaga({ key: 'itunes', saga: iTunesSaga }))(Itunes);
+export default compose(withConnect, injectSaga({ key: 'itunes', saga: iTunesSaga }))(Itunes);
 
 export const ItunesTest = compose()(Itunes);

@@ -9,8 +9,8 @@ import get from 'lodash/get';
 
 export const { Types: itunesTypes, Creators: itunesCreators } = createActions({
   requestGetiTunesSongs: ['songName'],
-  successGetiTunesSongs: ['data'],
-  failureGetiTunesSongs: ['error'],
+  successGetiTunesSongs: ['songsData'],
+  failureGetiTunesSongs: ['songsError'],
   cleariTunesSongs: {}
 });
 

@@ -84,11 +84,11 @@ describe('<Itunes /> container tests', () => {
     };
     const props = mapDispatchToProps(dispatchSongsSearchSpy);
     props.dispatchSongsApi(songName);
-    expect(dispatchSongsSearchSpy).toHaveBeenCalledWith(actions.requestGetiTunesSongs);
+    expect(dispatchSongsSearchSpy).toHaveBeenCalledWith(actions.dispatchSongsApi);
 
     await timeout(500);
     props.dispatchClearSongsData();
-    expect(dispatchSongsSearchSpy).toHaveBeenCalledWith(actions.cleariTunesSongs);
+    expect(dispatchSongsSearchSpy).toHaveBeenCalledWith(actions.dispatchClearSongsData);
   });
   it('should render default error message when search goes wrong', () => {
     const defaultError = translate('something_went_wrong');
@@ -97,13 +97,18 @@ describe('<Itunes /> container tests', () => {
     expect(getByTestId('error-message').textContent).toBe(defaultError);
   });
   it('should render the default message when searchBox is empty and songsError is null', () => {
-    const defaultMessage = translate('repo_search_default');
+    const defaultMessage = translate('Search for a song by entering song name in the search box');
     const { getByTestId } = renderProvider(<Itunes />);
     expect(getByTestId('default-message')).toBeInTheDocument();
     expect(getByTestId('default-message').textContent).toBe(defaultMessage);
   });
   it('should render the data when loading becomes false', () => {
-    const songsData = { items: [{ repoOne: 'react-template' }] };
+    const songsData = {
+      results: [
+        { trackName: 'cold play', artistName: 'cold play', previewUrl: '', artworkUrl100: '', collectionName: '' }
+      ],
+      resultCount: 1
+    };
     const { getByTestId } = renderProvider(<Itunes songsData={songsData} dispatchSongsApi={submitSpy} />);
     expect(getByTestId('for')).toBeInTheDocument();
   });
