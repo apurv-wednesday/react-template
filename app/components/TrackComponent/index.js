@@ -36,7 +36,7 @@ export function TrackComponent({ trackName, artistName, previewUrl, artworkUrl10
     setIsPlaying(!isPlaying);
   };
   return (
-    <CustomCard sx={{ display: 'flex' }} data-testid="track-component">
+    <CustomCard sx={{ display: 'flex', justifyContent: 'space-between' }} data-testid="track-component">
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <CardContent sx={{ flex: '1 0 auto' }}>
           <Typography component="div" variant="h5">
