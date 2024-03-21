@@ -4,7 +4,7 @@ exports[`<TrackComponent /> should render and match the snapshot 1`] = `
 <body>
   <div>
     <div
-      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root e1a3jrlg0 css-s4xvv6-MuiPaper-root-MuiCard-root"
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiCard-root e1a3jrlg0 css-15kwy1v-MuiPaper-root-MuiCard-root"
       data-testid="track-component"
     >
       <div
