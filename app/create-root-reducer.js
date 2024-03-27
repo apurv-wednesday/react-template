@@ -16,6 +16,6 @@ export default function createRootReducer(injectedReducer = {}) {
     ...injectedReducer,
     language: LanguageProviderReducer,
     homeContainer: HomeContainerReducer,
-    iTunes: itunesReducer
+    itunes: itunesReducer
   });
 }

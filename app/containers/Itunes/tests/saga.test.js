@@ -25,7 +25,7 @@ describe('Itunes saga tests', () => {
     expect(getSongsAPIGenerator.next(apiResponseGenerator(false, errorResponse)).value).toEqual(
       put({
         type: itunesTypes.FAILURE_GETI_TUNES_SONGS,
-        error: errorResponse
+        songsError: errorResponse
       })
     );
   });
@@ -34,13 +34,15 @@ describe('Itunes saga tests', () => {
     const res = getSongsAPIGenerator.next().value;
     expect(res).toEqual(call(getSongs, songName));
     const songsDataResponse = {
-      totalCount: 1,
-      items: [{ songName: songName }]
+      resultCount: 1,
+      results: [
+        { trackName: 'cold play', artistName: 'cold play', previewUrl: '', artworkUrl100: '', collectionName: '' }
+      ],
     };
     expect(getSongsAPIGenerator.next(apiResponseGenerator(true, songsDataResponse)).value).toEqual(
       put({
         type: itunesTypes.SUCCESS_GETI_TUNES_SONGS,
-        data: songsDataResponse
+        songsData: songsDataResponse
       })
     );
   });

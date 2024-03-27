@@ -108,7 +108,7 @@ exports[`<Itunes /> container tests should render and match the snapshot 1`] = `
           class="css-lh9t18 egtqi0h0"
           data-testid="default-message"
         >
-          Search for a repository by entering it's name in the search box
+          Search for a song by entering song name in the search box
         </p>
       </div>
     </div>

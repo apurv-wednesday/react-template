@@ -43,12 +43,12 @@ export const generateApiClient = (type = 'github') => {
   }
   if (type === API_TYPES.ITUNES) {
     // eslint-disable-next-line immutable/no-mutation
-    apiClients[type] = createApiClientWithTransForm(process.env.ITUNES_URL);
+    apiClients[type] = createiTunesApiClientWithTransForm(process.env.ITUNES_URL);
     return apiClients[type];
   }
   // store this value for time to come
   // eslint-disable-next-line immutable/no-mutation
-  apiClients.default = createApiClientWithTransForm(process.env.ITUNES_URL);
+  apiClients.default = createiTunesApiClientWithTransForm(process.env.ITUNES_URL);
   return apiClients[API_TYPES.DEFAULT];
 };
 
@@ -63,6 +63,44 @@ export const generateApiClient = (type = 'github') => {
  * @returns {Object} The API client with added transformations.
  */
 export const createApiClientWithTransForm = (baseURL) => {
+  const api = create({
+    baseURL,
+    headers: { 'Content-Type': 'application/json' }
+  });
+  api.addResponseTransform((response) => {
+    const { ok, data } = response;
+    if (ok && data) {
+      // this needs to actually mutate the response
+      // eslint-disable-next-line immutable/no-mutation
+      response.data = mapKeysDeep(data, (keys) => camelCase(keys));
+    }
+    return response;
+  });
+
+  api.addRequestTransform((request) => {
+    const { data } = request;
+    if (data) {
+      // this needs to actually mutate the request
+      // eslint-disable-next-line immutable/no-mutation
+      request.data = mapKeysDeep(data, (keys) => snakeCase(keys));
+    }
+    return request;
+  });
+  return api;
+};
+/**
+ * kept as a seperate function so that any data transaformation for iTunes API can be handled here
+ * Creates an API client with response and request transformations.
+ * The response transformation converts keys in the response data from snake_case to camelCase.
+ * The request transformation converts keys in the request data from camelCase to snake_case.
+ *
+ * @date 01/03/2024 - 14:47:28
+ *
+ * @param {string} baseURL - The base URL for the API client.
+ * @returns {Object} The API client with added transformations.
+ */
+// eslint-disable-next-line sonarjs/no-identical-functions
+export const createiTunesApiClientWithTransForm = (baseURL) => {
   const api = create({
     baseURL,
     headers: { 'Content-Type': 'application/json' }
