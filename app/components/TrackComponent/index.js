@@ -4,7 +4,7 @@
  *
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef, memo } from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import Box from '@mui/material/Box';
@@ -16,25 +16,55 @@ import Typography from '@mui/material/Typography';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import Pause from '@mui/icons-material/Pause';
 
+/**
+ * A styled custom card component for displaying track information.
+ */
 const CustomCard = styled(Card)`
   && {
     margin: 1rem 0;
     padding: 1rem;
   }
 `;
-// eslint-disable-next-line require-jsdoc
-export function TrackComponent({ trackName, artistName, previewUrl, artworkUrl100, collectionName }) {
-  // console.log("component",data)
+/**
+ * Functional component for displaying track information with play/pause functionality.
+ * @param {Object} props - The component props.
+ * @param {string} props.trackName - The name of the track.
+ * @param {string} props.artistName - The name of the artist.
+ * @param {string} props.previewUrl - The URL of the track preview.
+ * @param {string} props.artworkUrl100 - The URL of the artwork image.
+ * @param {string} props.collectionName - The name of the collection.
+ * @param {Function} props.pauseTrack - Callback function to handle pause track wrapper.
+ * @returns {JSX.Element} - The rendered component.
+ */
+export const TrackComponent = memo(function TrackComponent({
+  trackName,
+  artistName,
+  previewUrl,
+  artworkUrl100,
+  collectionName,
+  pauseTrack
+}) {
+  // console.log("render component",previewUrl);
+  const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [audio] = useState(new Audio(previewUrl));
-  const handlePlayClick = () => {
-    if (isPlaying) {
-      audio.pause();
+
+  /**
+   * Event handler for play/pause button click.
+   * @param {Object} e - The click event object.
+   */
+  const handlePlayClick = (e) => {
+    e.preventDefault();
+
+    const isPaused = audioRef.current ? audioRef.current.paused : undefined;
+    if (isPaused) {
+      audioRef.current.play();
     } else {
-      audio.play();
+      audioRef.current.pause();
     }
     setIsPlaying(!isPlaying);
+    pauseTrack(audioRef);
   };
+
   return (
     <CustomCard sx={{ display: 'flex', justifyContent: 'space-between' }} data-testid="track-component">
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -48,23 +78,26 @@ export function TrackComponent({ trackName, artistName, previewUrl, artworkUrl10
         </CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
           <IconButton aria-label="play/pause" onClick={handlePlayClick}>
-            {isPlaying ? <Pause /> : <PlayArrowIcon />}
+            {!audioRef.current?.paused && audioRef.current?.src ? <Pause /> : <PlayArrowIcon />}
+            {/* {audioRef.current && audioRef.current.src && (!audioRef.current.paused ? <Pause /> : <PlayArrowIcon />)} */}
+            {/* {audioRef.current && audioRef.current.src ? (!audioRef.current.paused ? <Pause /> : <PlayArrowIcon />) : null} */}
           </IconButton>
         </Box>
       </Box>
       <CardMedia component="img" sx={{ width: 151 }} image={artworkUrl100} alt={collectionName} />
-      {isPlaying && <audio src={previewUrl} autoPlay />}
+      <audio src={previewUrl} ref={audioRef} data-testid="trackAudio" />
+      {/* {isPlaying && <audio src={previewUrl} ref={audioRef} />} */}
     </CustomCard>
   );
-}
+});
 
 TrackComponent.propTypes = {
   trackName: PropTypes.string,
   previewUrl: PropTypes.string,
   artistName: PropTypes.string,
   artworkUrl100: PropTypes.string,
-  collectionName: PropTypes.string
+  collectionName: PropTypes.string,
+  pauseTrack: PropTypes.func.isRequired
 };
 
 export default TrackComponent;
-// functions : songName, songURL, artist(Can be a seperate component), play/pause

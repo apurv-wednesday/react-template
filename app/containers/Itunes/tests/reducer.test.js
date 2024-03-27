@@ -22,16 +22,16 @@ describe('Itunes reducer tests', () => {
   });
 
   it('should ensure that the song data is present and loading = false when successGetiTunesSongs is dispatched', () => {
-    const data = { songName: 'Coldplay' };
-    const expectedResult = { ...state, songsData: data, loading: false };
-    console.log(itunesReducer(state, {
+    const songsData = { songName: 'Coldplay' };
+    const expectedResult = { ...state, songsData: songsData, loading: false };
+    console.log("expected result: ",itunesReducer(state, {
       type: itunesTypes.SUCCESS_GETI_TUNES_SONGS,
-      data
+      songsData
     }))
     expect(
       itunesReducer(state, {
         type: itunesTypes.SUCCESS_GETI_TUNES_SONGS,
-        data
+        songsData
       })
     ).toEqual(expectedResult);
   });

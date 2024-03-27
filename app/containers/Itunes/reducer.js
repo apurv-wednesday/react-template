@@ -35,7 +35,7 @@ export const itunesReducer = (state = initialState, action) =>
         draft.loading = null;
         break;
       case itunesTypes.SUCCESS_GETI_TUNES_SONGS:
-        draft.songsData = action.data;
+        draft.songsData = action.songsData;
         draft.songsError = null;
         draft.loading = false;
         break;

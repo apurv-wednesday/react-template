@@ -49,6 +49,9 @@ exports[`<TrackComponent /> should render and match the snapshot 1`] = `
       <img
         class="MuiCardMedia-root MuiCardMedia-media MuiCardMedia-img css-1rorjgf-MuiCardMedia-root"
       />
+      <audio
+        data-testid="trackAudio"
+      />
     </div>
   </div>
 </body>

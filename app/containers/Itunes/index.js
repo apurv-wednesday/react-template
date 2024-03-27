@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import get from 'lodash/get';
 import isEmpty from 'lodash/isEmpty';
@@ -19,6 +19,9 @@ import { itunesCreators } from './reducer';
 import iTunesSaga from './saga';
 import { translate } from '@app/utils';
 
+/**
+ * Styled card component for custom styling.
+ */
 const CustomCard = styled(Card)`
   && {
     margin: 1.25rem 0;
@@ -28,11 +31,19 @@ const CustomCard = styled(Card)`
     ${(props) => props.color && `color: ${props.color}`};
   }
 `;
+
+/**
+ * Styled card header component for custom styling.
+ */
 const CustomCardHeader = styled(CardHeader)`
   && {
     padding: 0;
   }
 `;
+
+/**
+ * Styled container component for custom styling.
+ */
 const Container = styled.div`
   && {
     display: flex;
@@ -44,6 +55,9 @@ const Container = styled.div`
   }
 `;
 
+/**
+ * Styled input component for custom styling.
+ */
 const StyledOutlinedInput = styled(OutlinedInput)`
   legend {
     display: none;
@@ -54,10 +68,19 @@ const StyledOutlinedInput = styled(OutlinedInput)`
 `;
 
 /**
- * Itunes component that handles the logic for searching and displaying songs from itunes api.
+ * Itunes component that handles the logic for searching and displaying songs from the iTunes API.
  * It includes input handling, loading state management, and rendering of the repository list or error state.
  *
- * @returns {JSX.Element} The Itunes Home component.
+ * @param {Object} props - The component props.
+ * @param {Function} props.dispatchSongsApi - Dispatch function to fetch iTunes songs.
+ * @param {Function} props.dispatchClearSongsData - Dispatch function to clear iTunes songs data.
+ * @param {Object} props.songsData - The data containing iTunes songs.
+ * @param {string} props.songsError - The error message related to iTunes songs fetching.
+ * @param {string} props.songName - The name of the song being searched.
+ * @param {number} props.maxwidth - The maximum width of the component.
+ * @param {number} props.padding - The padding of the component.
+ * @param {boolean} props.loading - Loading state of the component.
+ * @returns {JSX.Element} The iTunes component.
  */
 export function Itunes({
   dispatchSongsApi,
@@ -69,16 +92,40 @@ export function Itunes({
   padding,
   loading
 }) {
+  const [currentTrackId, setCurrentTrackId] = useState(null);
+
+  /**
+   * Effect hook to fetch songs data when the component mounts or when the search term changes.
+   */
   useEffect(() => {
     if (songName && !songsData?.results?.length) {
       dispatchSongsApi(songName);
     }
   }, [dispatchSongsApi, dispatchClearSongsData, songName, songsData]);
 
+  /**
+   * Function to handle pausing the track.
+   * @param {Object} ref - Reference to the audio element.
+   */
+  const pauseTrack = (ref) => {
+    setCurrentTrackId(ref);
+    if (!currentTrackId?.current?.paused && ref.current.src !== currentTrackId?.current?.src) {
+      currentTrackId?.current?.pause();
+    }
+  };
+
+  /**
+   * Function to search for songs based on the provided song name.
+   * @param {string} sName - The name of the song to search for.
+   */
   const searchSongs = (sName) => {
     dispatchSongsApi(sName);
   };
 
+  /**
+   * Event handler for input change.
+   * @param {string} sName - The new value of the input.
+   */
   const handleOnChange = (sName) => {
     if (!isEmpty(sName)) {
       searchSongs(sName);
@@ -115,11 +162,16 @@ export function Itunes({
           }
         />
       </CustomCard>
-      {renderSongsList(songsData, loading, songName)}
+      {renderSongsList(songsData, loading, songName, pauseTrack)}
       {renderErrorState(songName, loading, songsError)}
     </Container>
   );
 }
+
+/**
+ * Renders skeleton loading UI.
+ * @returns {JSX.Element} Skeleton loading UI.
+ */
 const renderSkeleton = () => {
   return (
     <>
@@ -129,7 +181,17 @@ const renderSkeleton = () => {
     </>
   );
 };
-const renderSongsList = (songsData, loading, songName) => {
+
+/**
+ * Renders the list of songs.
+ * @param {Object} songsData - The data containing iTunes songs.
+ * @param {boolean} loading - Loading state of the component.
+ * @param {string} songName - The name of the song being searched.
+ * @param {Function} pauseTrack - Function to handle pausing the track.
+ * @returns {JSX.Element} The list of songs.
+ */
+// eslint-disable-next-line max-params
+const renderSongsList = (songsData, loading, songName, pauseTrack) => {
   const results = get(songsData, 'results', []);
   const resultCount = get(songsData, 'resultCount', 0);
   return (
@@ -150,7 +212,7 @@ const renderSongsList = (songsData, loading, songName) => {
             <For
               of={results}
               ParentComponent={Container}
-              renderItem={(item, index) => <TrackComponent key={index} {...item} />}
+              renderItem={(item, index) => <TrackComponent key={index} {...item} pauseTrack={pauseTrack} />}
             />
           </>
         </If>
@@ -158,6 +220,14 @@ const renderSongsList = (songsData, loading, songName) => {
     </If>
   );
 };
+
+/**
+ * Renders the error state.
+ * @param {string} songName - The name of the song being searched.
+ * @param {boolean} loading - Loading state of the component.
+ * @param {string} songsError - The error message related to iTunes songs fetching.
+ * @returns {JSX.Element} The error state.
+ */
 const renderErrorState = (songName, loading, songsError) => {
   let repoError;
   let messageId;
@@ -179,6 +249,9 @@ const renderErrorState = (songName, loading, songsError) => {
   );
 };
 
+/**
+ * Prop types for the Itunes component.
+ */
 Itunes.propTypes = {
   dispatchSongsApi: PropTypes.func,
   dispatchClearSongsData: PropTypes.func,
@@ -193,12 +266,20 @@ Itunes.propTypes = {
   loading: PropTypes.bool
 };
 
+/**
+ * Default props for the Itunes component.
+ */
 Itunes.defaultProps = {
   songName: null,
   maxwidth: 500,
   padding: 20
 };
 
+/**
+ * Selects parts of the state required by the Itunes component.
+ * @param {Object} state - The Redux state.
+ * @returns {Object} The selected state.
+ */
 const mapStateToProps = createStructuredSelector({
   loading: selectLoading(),
   songsData: selectSongsData(),
@@ -206,7 +287,11 @@ const mapStateToProps = createStructuredSelector({
   songName: selectSongName()
 });
 
-// eslint-disable-next-line require-jsdoc
+/**
+ * Maps dispatch functions to props.
+ * @param {Function} dispatch - The dispatch function.
+ * @returns {Object} The mapped dispatch functions.
+ */
 export function mapDispatchToProps(dispatch) {
   const { requestGetiTunesSongs, cleariTunesSongs } = itunesCreators;
   return {
@@ -215,8 +300,17 @@ export function mapDispatchToProps(dispatch) {
   };
 }
 
+/**
+ * Connects the Itunes component to the Redux store.
+ */
 const withConnect = connect(mapStateToProps, mapDispatchToProps);
 
+/**
+ * Injects the iTunes saga into the component.
+ */
 export default compose(withConnect, injectSaga({ key: 'itunes', saga: iTunesSaga }))(Itunes);
 
+/**
+ * A testable version of the Itunes component.
+ */
 export const ItunesTest = compose()(Itunes);
