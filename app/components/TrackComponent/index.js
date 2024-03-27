@@ -79,14 +79,11 @@ export const TrackComponent = memo(function TrackComponent({
         <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
           <IconButton aria-label="play/pause" onClick={handlePlayClick}>
             {!audioRef.current?.paused && audioRef.current?.src ? <Pause /> : <PlayArrowIcon />}
-            {/* {audioRef.current && audioRef.current.src && (!audioRef.current.paused ? <Pause /> : <PlayArrowIcon />)} */}
-            {/* {audioRef.current && audioRef.current.src ? (!audioRef.current.paused ? <Pause /> : <PlayArrowIcon />) : null} */}
           </IconButton>
         </Box>
       </Box>
       <CardMedia component="img" sx={{ width: 151 }} image={artworkUrl100} alt={collectionName} />
       <audio src={previewUrl} ref={audioRef} data-testid="trackAudio" />
-      {/* {isPlaying && <audio src={previewUrl} ref={audioRef} />} */}
     </CustomCard>
   );
 });
