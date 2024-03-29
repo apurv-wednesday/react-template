@@ -13,7 +13,9 @@
     "!**/apiUtils.js",
     "!**/testUtils.js",
     "!**/stories/**",
-    "!**/themes/index.js"
+    "!**/themes/index.js",
+    "!**/translations/*",
+    "!**/routeConstants.js"
   ],
   "testEnvironment": "jsdom",
   "reporters": [
