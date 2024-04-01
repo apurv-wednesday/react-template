@@ -68,10 +68,12 @@ export const TrackComponent = memo(function TrackComponent({
     pauseTrack(audioRef);
   };
 
-  // eslint-disable-next-line no-shadow
-  const handleTrackDetailsRoute = (trackId) => {
-    history.push(`/itunes/${trackId}`);
-  };
+  /**
+   * Navigates to the track details route in the browser history.
+   * @param {string} trackId - The ID of the track to navigate to its details.
+   * @returns {void}
+   */
+  const handleTrackDetailsRoute = (trackId) => history.push(/itunes/${trackId});
 
   return (
     <>
