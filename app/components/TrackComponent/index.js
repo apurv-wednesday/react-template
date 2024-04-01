@@ -73,7 +73,7 @@ export const TrackComponent = memo(function TrackComponent({
    * @param {string} trackId - The ID of the track to navigate to its details.
    * @returns {void}
    */
-  const handleTrackDetailsRoute = (trackId) => history.push(/itunes/${trackId});
+  const handleTrackDetailsRoute = (trackID) => history.push(`/itunes/${trackID}`);
 
   return (
     <>
