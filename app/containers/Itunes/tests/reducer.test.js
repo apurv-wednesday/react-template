@@ -49,4 +49,53 @@ describe('Itunes reducer tests', () => {
       })
     ).toEqual(initialState);
   });
+
+  it('should return the required state when an action of type REQUEST_GET_TRACK_DETAILS is dispatched', () => {
+    const expectedResult = {
+      ...state,
+      trackId: 123,
+      singleTrackLoading: true
+    };
+    expect(
+      itunesReducer(state, {
+        type: itunesTypes.REQUEST_GET_TRACK_DETAILS,
+        trackId: 123
+      })
+    ).toEqual(expectedResult);
+  });
+
+  it('should ensure that the REQUEST_GET_TRACK_DETAILS is success and SUCCESS_GET_TRACK_DETAILS is dispatched, returns the data and updates tracksData', () => {
+    const data = { songName: 'Coldplay', songArtist: 'Coldplay' };
+    const expectedResult = {
+      ...state,
+      trackDetailsError: null,
+      trackDetails: data,
+      singleTrackLoading: false
+    };
+    expect(
+      itunesReducer(state, {
+        type: itunesTypes.SUCCESS_GET_TRACK_DETAILS,
+        data: data
+      })
+    ).toEqual(expectedResult);
+  });
+  
+  it('should ensure that FAILURE_GET_TRACK_DETAILS has been dispatched when the track details data can not be found', () => {
+    const error = 'error fetching song';
+    const expectedResult = { ...state, trackDetailsError: error };
+    expect(
+      itunesReducer(state, {
+        type: itunesTypes.FAILURE_GET_TRACK_DETAILS,
+        error
+      })
+    ).toEqual(expectedResult);
+  });
+  it('should handle unknown action types gracefully', () => {
+    const modifiedState = { ...state, loading: true };
+    expect(
+      itunesReducer(modifiedState, {
+        type: 'UNKNOWN_ACTION'
+      })
+    ).toEqual(modifiedState);
+  });
 });

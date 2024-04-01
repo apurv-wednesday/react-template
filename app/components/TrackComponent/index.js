@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useRef, memo } from 'react';
+import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import Box from '@mui/material/Box';
@@ -15,6 +16,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import Pause from '@mui/icons-material/Pause';
+import Button from '@mui/material/Button';
 
 /**
  * A styled custom card component for displaying track information.
@@ -37,6 +39,7 @@ const CustomCard = styled(Card)`
  * @returns {JSX.Element} - The rendered component.
  */
 export const TrackComponent = memo(function TrackComponent({
+  trackId,
   trackName,
   artistName,
   previewUrl,
@@ -44,9 +47,9 @@ export const TrackComponent = memo(function TrackComponent({
   collectionName,
   pauseTrack
 }) {
-  // console.log("render component",previewUrl);
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const history = useHistory();
 
   /**
    * Event handler for play/pause button click.
@@ -65,36 +68,49 @@ export const TrackComponent = memo(function TrackComponent({
     pauseTrack(audioRef);
   };
 
+  /**
+   * Navigates to the track details route in the browser history.
+   * @param {string} trackId - The ID of the track to navigate to its details.
+   * @returns {void}
+   */
+  const handleTrackDetailsRoute = (trackId) => history.push(/itunes/${trackId});
+
   return (
-    <CustomCard sx={{ display: 'flex', justifyContent: 'space-between' }} data-testid="track-component">
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <CardContent sx={{ flex: '1 0 auto' }}>
-          <Typography component="div" variant="h5">
-            {trackName}
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary" component="div">
-            {artistName}
-          </Typography>
-        </CardContent>
-        <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
-          <IconButton aria-label="play/pause" onClick={handlePlayClick}>
-            {!audioRef.current?.paused && audioRef.current?.src ? <Pause /> : <PlayArrowIcon />}
-          </IconButton>
+    <>
+      <CustomCard sx={{ display: 'flex', justifyContent: 'space-between' }} data-testid="track-component">
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <CardContent sx={{ flex: '1 0 auto' }}>
+            <Typography component="div" variant="h5">
+              {trackName}
+            </Typography>
+            <Typography variant="subtitle1" color="text.secondary" component="div">
+              {artistName}
+            </Typography>
+          </CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
+            <IconButton aria-label="play/pause" data-testid="play-pause-button" onClick={handlePlayClick}>
+              {!audioRef.current?.paused && audioRef.current?.src ? <Pause /> : <PlayArrowIcon />}
+            </IconButton>
+          </Box>
+          <Button variant="outlined" color="secondary" onClick={() => handleTrackDetailsRoute(trackId)}>
+            Show Details
+          </Button>
         </Box>
-      </Box>
-      <CardMedia component="img" sx={{ width: 151 }} image={artworkUrl100} alt={collectionName} />
-      <audio src={previewUrl} ref={audioRef} data-testid="trackAudio" />
-    </CustomCard>
+        <CardMedia component="img" sx={{ width: 151 }} image={artworkUrl100} alt={collectionName} />
+        <audio src={previewUrl} ref={audioRef} data-testid="trackAudio" />
+      </CustomCard>
+    </>
   );
 });
 
 TrackComponent.propTypes = {
+  trackId: PropTypes.number,
   trackName: PropTypes.string,
   previewUrl: PropTypes.string,
   artistName: PropTypes.string,
   artworkUrl100: PropTypes.string,
   collectionName: PropTypes.string,
-  pauseTrack: PropTypes.func.isRequired
+  pauseTrack: PropTypes.func
 };
 
 export default TrackComponent;

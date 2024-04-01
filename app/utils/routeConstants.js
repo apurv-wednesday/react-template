@@ -14,5 +14,9 @@ export default {
       padding: 20
     },
     exact: true
+  },
+  trackDetails: {
+    route: '/itunes/:trackId',
+    exact: true
   }
 };
